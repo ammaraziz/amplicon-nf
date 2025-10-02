@@ -20,6 +20,8 @@ include { MAFFT_ALIGN                               } from '../modules/nf-core/m
 include { SEQKIT_GREP as SEQKIT_GREP_FASTAS         } from '../modules/nf-core/seqkit/grep/main'
 include { SEQKIT_GREP as SEQKIT_GREP_REFS           } from '../modules/nf-core/seqkit/grep/main'
 include { CAT_CAT                                   } from '../modules/nf-core/cat/cat/main'
+include { NEXTCLADE_DATASETGET                      } from '../modules/nf-core/nextclade/datasetget/main.nf'
+include { NEXTCLADE_RUN                             } from '../modules/nf-core/nextclade/run/main'
 
 include { GENERATE_SAMPLE_REPORT                    } from '../modules/local/generate_sample_report/main'
 include { GENERATE_RUN_REPORT                       } from '../modules/local/generate_run_report/main'
@@ -153,6 +155,23 @@ workflow AMPLICON_NF {
     ch_reheadered_consensus_fasta = SEQKIT_REPLACE_ILLUMINA.out.fastx.mix(
         SEQKIT_REPLACE_ONT.out.fastx
     )
+
+    //
+    // Run Nextclade - Optional
+    //
+    if (params.nextclade) {
+        NEXTCLADE_DATASETGET (
+            params.nextclade_dataset_name,
+            params.nextclade_dataset_tag
+        )
+
+        NEXTCLADE_RUN (
+            ch_reheadered_consensus_fasta,
+            NEXTCLADE_DATASETGET.out.dataset
+        )
+        ch_versions = ch_versions.mix(NEXTCLADE_DATASETGET.out.versions)
+    }
+
 
     //
     // Generate report for each sample
@@ -400,4 +419,5 @@ workflow AMPLICON_NF {
     versions        = ch_versions // channel: software versions used in the workflow    
     consensus_fasta = ch_reheadered_consensus_fasta // channel: consensus FASTA files
     sample_report   = GENERATE_SAMPLE_REPORT.out.sample_report_html // channel: sample report files
+    nextclade_results = NEXTCLADE_RUN.out.tsv // channel: Nextclade results tsv
 }
