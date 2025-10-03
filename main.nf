@@ -43,6 +43,7 @@ workflow ARTICNETWORK_AMPLICON_NF {
 
     emit:
     multiqc_report = AMPLICON_NF.out.multiqc_report // channel: /path/to/multiqc_report.html
+    consensus = AMPLICON_NF.out.consensus_fasta.view()
     // nextclade_report = AMPLICON_NF.out.nextclade_report.view()
 }
 /*
