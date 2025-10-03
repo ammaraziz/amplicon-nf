@@ -393,6 +393,7 @@ workflow AMPLICON_NF {
     //
     ch_nextclade_report = Channel.empty()
     if (params.nextclade) {
+        SEQKIT_GREP_FASTAS(CAT_CAT.out.file_out, [])
         nextclade_tag_ch = Channel.of(params.nextclade_dataset_tag ?: "")
         NEXTCLADE_DATASETGET (
             params.nextclade_dataset_name,
