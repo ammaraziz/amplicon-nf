@@ -339,24 +339,6 @@ workflow AMPLICON_NF {
     ch_versions = ch_versions.mix(GENERATE_RUN_REPORT.out.versions.first())
 
     //
-    // Run Nextclade - Optional
-    //
-    ch_nextclade_report = Channel.empty()
-    if (params.nextclade) {
-        nextclade_tag_ch = Channel.of(params.nextclade_dataset_tag ?: "")
-        NEXTCLADE_DATASETGET (
-            params.nextclade_dataset_name,
-            nextclade_tag_ch
-        )
-        NEXTCLADE_RUN (
-            SEQKIT_GREP_FASTAS.out.filter,
-            NEXTCLADE_DATASETGET.out.dataset
-        )
-        ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
-        ch_nextclade_report = NEXTCLADE_RUN.out.csv
-    }
-
-    //
     // Collate and save software versions
     //
     softwareVersionsToYAML(ch_versions)
@@ -405,6 +387,24 @@ workflow AMPLICON_NF {
             sort: true,
         )
     )
+    
+    //
+    // Run Nextclade - Optional
+    //
+    ch_nextclade_report = Channel.empty()
+    if (params.nextclade) {
+        nextclade_tag_ch = Channel.of(params.nextclade_dataset_tag ?: "")
+        NEXTCLADE_DATASETGET (
+            params.nextclade_dataset_name,
+            nextclade_tag_ch
+        )
+        NEXTCLADE_RUN (
+            SEQKIT_GREP_FASTAS.out.filter,
+            NEXTCLADE_DATASETGET.out.dataset
+        )
+        ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
+        ch_nextclade_report = NEXTCLADE_RUN.out.csv
+    }
 
     MULTIQC(
         ch_multiqc_files.collect(),
