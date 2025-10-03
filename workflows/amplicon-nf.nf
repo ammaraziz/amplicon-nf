@@ -176,6 +176,7 @@ workflow AMPLICON_NF {
             NEXTCLADE_DATASETGET.out.dataset
         )
         ch_versions = ch_versions.mix(NEXTCLADE_DATASETGET.out.versions)
+        ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
     }
 
 
