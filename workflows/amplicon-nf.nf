@@ -8,6 +8,7 @@ include { paramsSummaryMap                          } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc                      } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML                    } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText                    } from '../subworkflows/local/utils_nfcore_amplicon-nf_pipeline'
+include { LINEAGE_CALL                              } from "../subworkflows/local/lineage/"
 
 include { ONT_ASSEMBLY                              } from '../subworkflows/local/ont_assembly/main'
 include { ILLUMINA_ASSEMBLY                         } from '../subworkflows/local/illumina_assembly/main'
@@ -153,6 +154,17 @@ workflow AMPLICON_NF {
     ch_reheadered_consensus_fasta = SEQKIT_REPLACE_ILLUMINA.out.fastx.mix(
         SEQKIT_REPLACE_ONT.out.fastx
     )
+
+    //
+    // Run Nextclade - optional
+    //
+    if (params.nextclade) {
+        ch_all_consensus_fasta = ch_reheadered_consensus_fasta
+            .map { _meta, fasta -> fasta }
+            .collectFile(name: 'all_consensus.fasta')
+        LINEAGE_CALL(ch_all_consensus_fasta)
+        ch_versions = ch_versions.mix(LINEAGE_CALL.out.versions)
+    }
 
     //
     // Generate report for each sample
