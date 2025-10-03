@@ -166,15 +166,14 @@ workflow AMPLICON_NF {
             params.nextclade_dataset_name,
             nextclade_tag_ch
         )
-
+        ch_all_consensus = ch_reheadered_consensus_fasta.map {meta, fasta -> fasta .collect()
         NEXTCLADE_RUN (
-            ch_reheadered_consensus_fasta,
+            ch_all_consensus,
             NEXTCLADE_DATASETGET.out.dataset
         )
         ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
         ch_nextclade_report = NEXTCLADE_RUN.out.csv
     }
-
 
     //
     // Generate report for each sample
