@@ -56,7 +56,7 @@
                     "title": "Run nextclade",
                     "description": "Run Nextclade for clade assignment, mutation calling, and sequence quality checks for genome consensus sequence",
                     "fa_icon": "fas fa-project-diagram",
-                    "default": true
+                    "default": false
                 },
                 "nextclade_dataset_name": {
                     "type": "string",
