@@ -162,6 +162,8 @@ workflow AMPLICON_NF {
         ch_all_consensus_fasta = ch_reheadered_consensus_fasta
             .map { _meta, fasta -> fasta }
             .collectFile(name: 'all_consensus.fasta')
+            .map { multi_fasta ->[[id: 'all_consensus'], multi_fasta]
+    }
         LINEAGE_CALL(ch_all_consensus_fasta)
         ch_versions = ch_versions.mix(LINEAGE_CALL.out.versions)
     }
