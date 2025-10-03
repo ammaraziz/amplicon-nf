@@ -422,5 +422,5 @@ workflow AMPLICON_NF {
     versions        = ch_versions // channel: software versions used in the workflow    
     consensus_fasta = ch_reheadered_consensus_fasta // channel: consensus FASTA files
     sample_report   = GENERATE_SAMPLE_REPORT.out.sample_report_html // channel: sample report files
-    nextclade_report = ch_nextclade_report // channel: [ val(meta), [ csv ] ]
+    nextclade_report = ch_nextclade_report.view() // channel: [ val(meta), [ csv ] ]
 }
