@@ -161,15 +161,9 @@ workflow AMPLICON_NF {
     //
     ch_nextclade_report = Channel.empty()
     // if (params.nextclade) {
-        nextclade_tag_ch = Channel.empty()
-        if (params.nextclade_dataset_tag) {
-            nextclade_tag_ch = Channel.value(params.nextclade_dataset_tag)
-        } else {
-            nextclade_tag_ch = Channel.empty()
-        }
         NEXTCLADE_DATASETGET (
             params.nextclade_dataset_name,
-            nextclade_tag_ch
+            params.nextclade_dataset_tag
         )
 
         NEXTCLADE_RUN (
