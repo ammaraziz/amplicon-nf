@@ -328,7 +328,17 @@ workflow AMPLICON_NF {
             }
     }
 
-        //
+    GENERATE_RUN_REPORT(
+        ch_run_report_input,
+        run_report_template,
+        artic_logo_svg,
+        bootstrap_bundle_min_js,
+        bootstrap_bundle_min_css,
+        plotly_js,
+    )
+    ch_versions = ch_versions.mix(GENERATE_RUN_REPORT.out.versions.first())
+
+    //
     // Run Nextclade - Optional
     //
     ch_nextclade_report = Channel.empty()
@@ -345,16 +355,6 @@ workflow AMPLICON_NF {
         ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
         ch_nextclade_report = NEXTCLADE_RUN.out.csv
     }
-
-    GENERATE_RUN_REPORT(
-        ch_run_report_input,
-        run_report_template,
-        artic_logo_svg,
-        bootstrap_bundle_min_js,
-        bootstrap_bundle_min_css,
-        plotly_js,
-    )
-    ch_versions = ch_versions.mix(GENERATE_RUN_REPORT.out.versions.first())
 
     //
     // Collate and save software versions
