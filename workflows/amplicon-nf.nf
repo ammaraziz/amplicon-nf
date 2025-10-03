@@ -157,25 +157,6 @@ workflow AMPLICON_NF {
     )
 
     //
-    // Run Nextclade - Optional
-    //
-    ch_nextclade_report = Channel.empty()
-    if (params.nextclade) {
-        nextclade_tag_ch = Channel.of(params.nextclade_dataset_tag ?: "")
-        NEXTCLADE_DATASETGET (
-            params.nextclade_dataset_name,
-            nextclade_tag_ch
-        )
-        NEXTCLADE_RUN (
-            ch_reheadered_consensus_fasta,
-            NEXTCLADE_DATASETGET.out.dataset
-        )
-        ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
-        ch_nextclade_report = NEXTCLADE_RUN.out.csv
-    }
-
-
-    //
     // Generate report for each sample
     //
     ch_primertrimmed_bam = ONT_ASSEMBLY.out.primertrimmed_normalised_bam.mix(
@@ -347,6 +328,24 @@ workflow AMPLICON_NF {
             }
     }
 
+        //
+    // Run Nextclade - Optional
+    //
+    ch_nextclade_report = Channel.empty()
+    if (params.nextclade) {
+        nextclade_tag_ch = Channel.of(params.nextclade_dataset_tag ?: "")
+        NEXTCLADE_DATASETGET (
+            params.nextclade_dataset_name,
+            nextclade_tag_ch
+        )
+        NEXTCLADE_RUN (
+            SEQKIT_GREP_FASTAS.out,
+            NEXTCLADE_DATASETGET.out.dataset
+        )
+        ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
+        ch_nextclade_report = NEXTCLADE_RUN.out.csv
+    }
+
     GENERATE_RUN_REPORT(
         ch_run_report_input,
         run_report_template,
@@ -421,5 +420,5 @@ workflow AMPLICON_NF {
     versions        = ch_versions // channel: software versions used in the workflow    
     consensus_fasta = ch_reheadered_consensus_fasta // channel: consensus FASTA files
     sample_report   = GENERATE_SAMPLE_REPORT.out.sample_report_html // channel: sample report files
-    nextclade_report = ch_nextclade_report.view() // channel: [ val(meta), [ csv ] ]
+    nextclade_report = ch_nextclade_report // channel: [ val(meta), [ csv ] ]
 }
