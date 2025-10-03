@@ -391,21 +391,20 @@ workflow AMPLICON_NF {
     //
     // Run Nextclade - Optional
     //
-    ch_nextclade_report = Channel.empty()
-    if (params.nextclade) {
-        SEQKIT_GREP_FASTAS(CAT_CAT.out.file_out, [])
-        nextclade_tag_ch = Channel.of(params.nextclade_dataset_tag ?: "")
-        NEXTCLADE_DATASETGET (
-            params.nextclade_dataset_name,
-            nextclade_tag_ch
-        )
-        NEXTCLADE_RUN (
-            SEQKIT_GREP_FASTAS.out.filter,
-            NEXTCLADE_DATASETGET.out.dataset
-        )
-        ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
-        ch_nextclade_report = NEXTCLADE_RUN.out.csv
-    }
+    // ch_nextclade_report = Channel.empty()
+    // if (params.nextclade) {
+    //     nextclade_tag_ch = Channel.of(params.nextclade_dataset_tag ?: "")
+    //     NEXTCLADE_DATASETGET (
+    //         params.nextclade_dataset_name,
+    //         nextclade_tag_ch
+    //     )
+    //     NEXTCLADE_RUN (
+    //         SEQKIT_GREP_FASTAS.out.filter,
+    //         NEXTCLADE_DATASETGET.out.dataset
+    //     )
+    //     ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
+    //     ch_nextclade_report = NEXTCLADE_RUN.out.csv
+    // }
 
     MULTIQC(
         ch_multiqc_files.collect(),
@@ -419,7 +418,7 @@ workflow AMPLICON_NF {
     emit:
     multiqc_report  = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
     versions        = ch_versions // channel: software versions used in the workflow    
-    consensus_fasta = ch_reheadered_consensus_fasta // channel: consensus FASTA files
+    consensus_fasta = ch_reheadered_consensus_fasta.view() // channel: consensus FASTA files
     sample_report   = GENERATE_SAMPLE_REPORT.out.sample_report_html // channel: sample report files
     nextclade_report = ch_nextclade_report // channel: [ val(meta), [ csv ] ]
 }
