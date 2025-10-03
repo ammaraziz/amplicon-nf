@@ -159,7 +159,7 @@ workflow AMPLICON_NF {
     //
     // Run Nextclade - Optional
     //
-    if (params.nextclade) {
+    // if (params.nextclade) {
         nextclade_tag_ch = Channel.empty()
         if (params.nextclade_dataset_tag) {
             nextclade_tag_ch = Channel.value(params.nextclade_dataset_tag)
@@ -177,7 +177,7 @@ workflow AMPLICON_NF {
         )
         ch_versions = ch_versions.mix(NEXTCLADE_DATASETGET.out.versions)
         ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
-    }
+    // }
 
 
     //
