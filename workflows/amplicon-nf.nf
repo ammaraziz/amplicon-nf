@@ -339,7 +339,7 @@ workflow AMPLICON_NF {
             nextclade_tag_ch
         )
         NEXTCLADE_RUN (
-            SEQKIT_GREP_FASTAS.out,
+            SEQKIT_GREP_FASTAS.out.filter,
             NEXTCLADE_DATASETGET.out.dataset
         )
         ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
