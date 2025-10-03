@@ -166,9 +166,8 @@ workflow AMPLICON_NF {
             params.nextclade_dataset_name,
             nextclade_tag_ch
         )
-        ch_all_consensus = ch_reheadered_consensus_fasta.map {meta, fasta -> fasta }.collect()
         NEXTCLADE_RUN (
-            ch_all_consensus,
+            ch_reheadered_consensus_fasta,
             NEXTCLADE_DATASETGET.out.dataset
         )
         ch_versions = ch_versions.mix(NEXTCLADE_RUN.out.versions)
