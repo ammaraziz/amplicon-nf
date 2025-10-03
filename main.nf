@@ -43,7 +43,7 @@ workflow ARTICNETWORK_AMPLICON_NF {
 
     emit:
     multiqc_report = AMPLICON_NF.out.multiqc_report // channel: /path/to/multiqc_report.html
-    AMPLICON_NF.out.nextclade_report.map { meta, files -> files }
+    nextclade_report = AMPLICON_NF.out.nextclade_report.view()
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
