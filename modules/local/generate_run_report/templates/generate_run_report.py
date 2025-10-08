@@ -895,6 +895,7 @@ with open(f"{scheme_version_str.replace("/", "_")}_qc_results.tsv", "w") as f:
             "sample",
             "primer_scheme",
             "coverage",
+            "percent_coverage",
             "mean_depth",
             "total_reads",
             "total_amp_dropouts",
